@@ -5,6 +5,6 @@ with ncs.maapi.Maapi() as m:
            root = ncs.maagic.get_root(m)
            for package in (root.packages.reload().reload_result):
                print package.package, " ", package.result
-               if package.result == False:
+               if package.result == False && package.name == "Object_group_cleaner":
                    message = package.package + " Failed to reload. Build Failed."
                    sys.exit(message)
