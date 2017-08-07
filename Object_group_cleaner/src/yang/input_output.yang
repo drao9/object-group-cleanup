@@ -24,7 +24,7 @@ module input_output {
     list inputs {
       tailf:info "Input values for the action";
       leaf input_type {
-        tailf:info "Enter 'device' or 'device_group'"
+        tailf:info "Enter 'device' or 'device_group'";
         type enumeration {
           enum "device_group";
           enum "device";
@@ -32,7 +32,7 @@ module input_output {
         }
       }
       leaf value { type string; }
-        tailf:info "Enter the device name or device_group name"
+        tailf:info "Enter the device name or device_group name";
     }
   }
 
