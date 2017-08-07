@@ -68,7 +68,7 @@ def search_and_destroy(box):
         #Provides an error message if there are no object groups to be removed for a device
         if empty:
             stat = "No Object Groups to Remove"
-    return ret
+    return ret, stat
 
 
 
