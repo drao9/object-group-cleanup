@@ -31,8 +31,9 @@ module input_output {
         //  enum "csv";
         }
       }
-      leaf value { type string; }
+      leaf value { type string;
         tailf:info "Enter the device name or device_group name";
+      }  
     }
   }
 
