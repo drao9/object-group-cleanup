@@ -66,10 +66,11 @@ The model has the following variables (leafs):
 ```
 create a session with NSO
   get the NCS root object
-    iterate through the devices
-      iterate through the object groups(need to think about the type situation)
+    iterate through inputted devices
+      iterate through the object groups
         iterate through access list
            check if obj group is in the access list
+              remove obj group from object group list
 ```
 ---
 ### Project Team Members
