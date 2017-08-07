@@ -186,7 +186,7 @@ class TestOGC(unittest.TestCase):
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
                         og_num = og + str(num_types) + '_'
                         num_types = num_types + 1
-                        for j in range(500):
+                        for j in range(300):
                             fake_og = og_num + str(j)
                             root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
 
@@ -202,7 +202,7 @@ class TestOGC(unittest.TestCase):
                         acl_num = holder + str(i)
                         root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
                         rul_num = rul + str(i) + '_'
-                        for j in range(400):
+                        for j in range(200):
                             fake_rule = rul_num + str(j)
                             root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
 
