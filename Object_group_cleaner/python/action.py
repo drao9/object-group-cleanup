@@ -45,7 +45,7 @@ class ActionHandler(Action):
         self.log.info(uinfo.addr)
         self.log.info(uinfo.usid)
         self.log.info(uinfo.username)
-        self.log.info("name: ", name)
+        self.log.info("option: ", name)
         self.log.info("keypath: ", str(kp))
 
         start = (datetime.strptime(str(datetime.now().time()), DATE_FORMAT))
