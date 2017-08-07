@@ -55,7 +55,7 @@ class ActionHandler(Action):
             count = 0
             devices = helpers.build_device_list(input)
             for device in devices:
-                self.log.info("cleanup device: ",device)
+                self.log.info("device: ",device)
                 og_for_removal = obj_cleanup.search_and_destroy(device)
                 for key in og_for_removal:
                     count += len(og_for_removal[key])
@@ -70,7 +70,7 @@ class ActionHandler(Action):
         elif name == "search":
             devices = helpers.build_device_list(input)
             for device in devices:
-                self.log.info("search device: ",device)
+                self.log.info("device: ",device)
                 og_for_removal = obj_cleanup.flag_ogs_in_box_test(device)
                 for key, value in og_for_removal.items():
                     for og in value:
