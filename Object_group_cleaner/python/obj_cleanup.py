@@ -62,7 +62,7 @@ def search_and_destroy(box):
             t.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-    except t.apply() as inst:
+        except t.apply() as inst:
             stat = inst
 
         #Provides an error message if there are no object groups to be removed for a device
