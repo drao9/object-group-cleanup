@@ -24,6 +24,7 @@ module input_output {
     list inputs {
       tailf:info "Input values for the action";
       leaf input_type {
+        tailf:info "Enter 'device' or 'device_group'"
         type enumeration {
           enum "device_group";
           enum "device";
@@ -31,6 +32,7 @@ module input_output {
         }
       }
       leaf value { type string; }
+        tailf:info "Enter the device name or device_group name"
     }
   }
 
@@ -38,7 +40,7 @@ module input_output {
 
   tailf:action cleanup {
     tailf:actionpoint Object_group_cleaner;
-    tailf:info "Search and remove unused object groups from devices";
+    tailf:info "Search and delete orphaned object groups from devices";
     input {
       uses input;
     }
@@ -57,7 +59,7 @@ module input_output {
 
   tailf:action search {
     tailf:actionpoint Object_group_cleaner;
-    tailf:info "Seach for unused object groups within devices";
+    tailf:info "Search for orphaned object groups within devices without deleting any";
     input {
       uses input;
     }
@@ -69,7 +71,7 @@ module input_output {
 
   tailf:action remove {
     tailf:actionpoint Object_group_cleaner;
-    tailf:info "Remove specific object groups from a devices object group list";
+    tailf:info "Delete specific object groups from a device";
     input {
       leaf csv { type string; }
       list inputs {
