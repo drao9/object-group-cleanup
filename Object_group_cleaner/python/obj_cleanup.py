@@ -56,17 +56,20 @@ def search_and_destroy(box):
                     ret[typ] = [og]
                 del root.devices.device[box].config.asa__object_group[typ][og]
 
+        stat = t.apply()
+
+        """
         try:
             t.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except:
-            stat = "Error Removing"
-
+        except Exception, err:
+            stat = Exception, err
+        """
         #Provides an error message if there are no object groups to be removed for a device
         if empty:
             stat = "No Object Groups to Remove"
-    return ret
+    return ret, stat
 
 
 

@@ -24,16 +24,15 @@ module input_output {
     list inputs {
       tailf:info "Input values for the action";
       leaf input_type {
-        tailf:info "Enter 'device' or 'device_group'";
         type enumeration {
-          enum "device_group";
+        //  enum "device_group";
           enum "device";
         //  enum "csv";
         }
       }
       leaf value { type string;
-        tailf:info "Enter the device name or device_group name";
-      }  
+        tailf:info "Enter the device name";
+      }
     }
   }
 
