@@ -1,7 +1,7 @@
 module input_output {
   namespace "http://example.com/input_output";
   prefix input_output;
-  import tailf - common {
+  import tailf-common {
     prefix tailf;
   }
   grouping output {
@@ -22,7 +22,6 @@ module input_output {
         type string;
       }
     }
-    //leaf csv { type string; }
   }
   grouping input {
     leaf device {
