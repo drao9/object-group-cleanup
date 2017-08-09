@@ -50,8 +50,9 @@ class ActionHandler(Action):
         if name == "cleanup":
             count = 0
             devices = helpers.build_device_list(input)
+            self.log.info("input: ",input)
             for device in devices:
-                self.log.info("device: ",device)
+                self.log.info("device ",device)
                 og_for_removal, stat = obj_cleanup.search_and_destroy(device)
                 for key in og_for_removal:
                     count += len(og_for_removal[key])
