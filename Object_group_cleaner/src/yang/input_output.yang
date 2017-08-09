@@ -25,16 +25,9 @@ module input_output {
     //leaf csv { type string; }
   }
   grouping input {
-    list inputs {
-      tailf: info "Input values for the action";
-      leaf device {
-        type leafref {
-          path "/ncs:devices/ncs:device/ncs:name";
-        }
-      }
-      leaf value {
-        type string;
-        tailf: info "Enter the device name or device_group name";
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
       }
     }
   }
