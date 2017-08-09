@@ -1,6 +1,10 @@
 module input_output {
   namespace "http://example.com/input_output";
   prefix input_output;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
   import tailf-common {
     prefix tailf;
   }
@@ -31,9 +35,9 @@ module input_output {
     }
   }
   grouping input_output {
-    tailf: action cleanup {
-      tailf: actionpoint Object_group_cleaner;
-      tailf: info "Search and delete orphaned object groups from devices";
+    tailf:action cleanup {
+      tailf:actionpoint Object_group_cleaner;
+      tailf:info "Search and delete orphaned object groups from devices";
       input {
         uses input;
       }
@@ -63,9 +67,9 @@ module input_output {
         }
       }
     }
-    tailf: action search {
-      tailf: actionpoint Object_group_cleaner;
-      tailf: info "Search for orphaned object groups within devices without deleting any";
+    tailf:action search {
+      tailf:actionpoint Object_group_cleaner;
+      tailf:info "Search for orphaned object groups within devices without deleting any";
       input {
         uses input;
       }
@@ -73,15 +77,15 @@ module input_output {
         uses output;
       }
     }
-    tailf: action remove {
-      tailf: actionpoint Object_group_cleaner;
-      tailf: info "Delete specific object groups from a device";
+    tailf:action remove {
+      tailf:actionpoint Object_group_cleaner;
+      tailf:info "Delete specific object groups from a device";
       input {
         leaf csv {
           type string;
         }
         list inputs {
-          tailf: info "Input values for remove";
+          tailf:info "Input values for remove";
           leaf device_name {
             type string;
           }
