@@ -1,105 +1,133 @@
-
-
 module input_output {
   namespace "http://example.com/input_output";
   prefix input_output;
-
-  import tailf-common {
+  import tailf - common {
     prefix tailf;
   }
-
-
   grouping output {
-      leaf start_time { type string; }
-      leaf end_time { type string; }
-      leaf run_time { type string; }
-      list orphaned_object_groups {
-        leaf og_type { type string; }
-        leaf object_group { type string; }
+    leaf start_time {
+      type string;
+    }
+    leaf end_time {
+      type string;
+    }
+    leaf run_time {
+      type string;
+    }
+    list orphaned_object_groups {
+      leaf og_type {
+        type string;
       }
-      //leaf csv { type string; }
+      leaf object_group {
+        type string;
+      }
+    }
+    //leaf csv { type string; }
   }
-
   grouping input {
     list inputs {
-      tailf:info "Input values for the action";
-      leaf input_type {
-        tailf:info "Enter 'device' or 'device_group'";
-        type enumeration {
-          enum "device_group";
-          enum "device";
-        //  enum "csv";
+      tailf: info "Input values for the action";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
         }
       }
-      leaf value { type string;
-        tailf:info "Enter the device name or device_group name";
-      }  
+      leaf value {
+        type string;
+        tailf: info "Enter the device name or device_group name";
+      }
     }
   }
-
   grouping input_output {
-
-  tailf:action cleanup {
-    tailf:actionpoint Object_group_cleaner;
-    tailf:info "Search and delete orphaned object groups from devices";
-    input {
-      uses input;
-    }
-    output {
-      leaf start_time { type string; }
-      leaf end_time { type string; }
-      leaf run_time { type string; }
-      leaf stat { type string; }
-      leaf number_of_ogs_deleted { type uint32; }
-      list deleted_object_groups {
-        leaf og_type { type string; }
-        leaf object_group { type string; }
+    tailf: action cleanup {
+      tailf: actionpoint Object_group_cleaner;
+      tailf: info "Search and delete orphaned object groups from devices";
+      input {
+        uses input;
       }
-    }
-  }
-
-  tailf:action search {
-    tailf:actionpoint Object_group_cleaner;
-    tailf:info "Search for orphaned object groups within devices without deleting any";
-    input {
-      uses input;
-    }
-    output {
-      uses output;
-      }
-    }
-
-
-  tailf:action remove {
-    tailf:actionpoint Object_group_cleaner;
-    tailf:info "Delete specific object groups from a device";
-    input {
-      leaf csv { type string; }
-      list inputs {
-        tailf:info "Input values for remove";
-        leaf device_name { type string; }
-        leaf og_type {
-          type enumeration {
-            enum "service";
-            enum "network";
-            enum "icmp-type";
-            enum "user";
+      output {
+        leaf start_time {
+          type string;
+        }
+        leaf end_time {
+          type string;
+        }
+        leaf run_time {
+          type string;
+        }
+        leaf stat {
+          type string;
+        }
+        leaf number_of_ogs_deleted {
+          type uint32;
+        }
+        list deleted_object_groups {
+          leaf og_type {
+            type string;
+          }
+          leaf object_group {
+            type string;
           }
         }
-        leaf og_name {type string;}
-
       }
     }
-    output {
-      leaf start_time { type string; }
-      leaf end_time { type string; }
-      leaf run_time { type string; }
-      list deleted_object_groups {
-        leaf og_type { type string; }
-        leaf object_group { type string; }
+    tailf: action search {
+      tailf: actionpoint Object_group_cleaner;
+      tailf: info "Search for orphaned object groups within devices without deleting any";
+      input {
+        uses input;
       }
-      leaf stat { type string; }
-   }
- }
- }
- }
+      output {
+        uses output;
+      }
+    }
+    tailf: action remove {
+      tailf: actionpoint Object_group_cleaner;
+      tailf: info "Delete specific object groups from a device";
+      input {
+        leaf csv {
+          type string;
+        }
+        list inputs {
+          tailf: info "Input values for remove";
+          leaf device_name {
+            type string;
+          }
+          leaf og_type {
+            type enumeration {
+              enum "service";
+              enum "network";
+              enum "icmp-type";
+              enum "user";
+            }
+          }
+          leaf og_name {
+            type string;
+          }
+        }
+      }
+      output {
+        leaf start_time {
+          type string;
+        }
+        leaf end_time {
+          type string;
+        }
+        leaf run_time {
+          type string;
+        }
+        list deleted_object_groups {
+          leaf og_type {
+            type string;
+          }
+          leaf object_group {
+            type string;
+          }
+        }
+        leaf stat {
+          type string;
+        }
+      }
+    }
+  }
+}

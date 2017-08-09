@@ -9,8 +9,6 @@ See the README file for more information
 """
 from __future__ import print_function
 import sys
-
-# import your_audit_name_here # Copy and change this to the name of your Python File
 import ncs
 from datetime import datetime
 import time
@@ -38,8 +36,6 @@ class ActionHandler(Action):
             input -- input node (maagic.Node)
             output -- output node (maagic.Node)
         """
-        #TODO determine logging standards
-
         _ncs.dp.action_set_timeout(uinfo, 500)
 
         self.log.info(uinfo.addr)
