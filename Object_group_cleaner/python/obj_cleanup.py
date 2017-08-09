@@ -136,17 +136,6 @@ def flag_ogs_in_box_test(box):
 
     return ret
 
-def banish(og, acl):
-    """
-    A function that iterates through the rules of an acl list checking for the
-    object group name within the rule. If found, the function returns true. If
-    not found, function returns false.
-    """
-    for rule in acl:
-        if og in rule:
-            return True
-    return False
-
 def remove_ogs(box, og_id, og_type):
     """
     A function that removes the object group from the object group list using
@@ -159,10 +148,3 @@ def remove_ogs(box, og_id, og_type):
             stat = "Success"
         except:
             stat = "Error Removing"
-
-
-def no_ogs_error(box):
-    """
-    This function prints an error message if there are no object groups to be removed for a device.
-    """
-    print "Error: There are no object groups that need to be removed for device ",box,"."
