@@ -2,7 +2,7 @@ import unittest
 import constants
 import ncs
 import socket
-import time
+import time 
 
 class TestOGC(unittest.TestCase):
     """
