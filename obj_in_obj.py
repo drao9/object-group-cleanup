@@ -1,6 +1,5 @@
 import ncs
 import socket
-import time
 
 def search_and_destroy(box):
     """
@@ -12,11 +11,7 @@ def search_and_destroy(box):
     og_typ = []
     acl_list = []
     ret = {}
-    #empty = True
-    used_group_ogs = set()
-    orphaned_ogs = set()
-    orphaned_dict = {}
-    delete_first = set()
+    empty = True
 
     #Creating transaction and setting root to access NSO
     with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as t:
@@ -43,7 +38,6 @@ def search_and_destroy(box):
                 #flag indicates whether og was found in an access list
                 for rule in acl:
                     if og in rule:
-                        used_group_ogs = rec_group_og(used_group_ogs, root, box, og, typ)
                         flag = 1
                         break
                 #If found, continue to the next object group
@@ -52,80 +46,28 @@ def search_and_destroy(box):
             #If not found in any of the access lists, delete from object group list
             #and add to dictionary
             if not flag:
-                orphaned_ogs.add(og)
-                inner_dict = {"og_type" : typ, "group_ogs" : [], "deleted" : 0}
-                if root.devices.device[box].config.asa__object_group[typ][og].group_object:
-                    delete_first.add(og)
-                    for group_og in root.devices.device[box].config.asa__object_group[typ][og].group_object:
-                        inner_dict["group_ogs"].append(group_og.id)
-                orphaned_dict[og] = inner_dict
-
-        #print "Used_Group_OGs: ", used_group_ogs
-        #print '\n'
-        #print "Orphaned_OGs: ", orphaned_ogs
-
-        orphaned_ogs = orphaned_ogs.difference(used_group_ogs)
-        delete_first = delete_first.difference(used_group_ogs)
-        delete_second = orphaned_ogs.difference(delete_first)
-
-        ret = del_1(root, box, delete_first, orphaned_dict, ret)
-        ret = del_2(root, box, delete_second, orphaned_dict, ret)
+                if empty:
+                    empty = False
+                #If key has been created already, add og to key
+                if typ in ret.keys():
+                    ret[typ].append(og)
+                #Else, create key and append og
+                else:
+                    ret[typ] = [og]
+                del root.devices.device[box].config.asa__object_group[typ][og]
 
         try:
             t.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except Exception, err:
-            stat = Exception, err
+        except:
+            stat = "Error Removing"
 
-        return ret, stat
-
-def rec_group_og(used_group_ogs, root, box, og, typ):
-    if root.devices.device[box].config.asa__object_group[typ][og].group_object:
-        for group_og in root.devices.device[box].config.asa__object_group[typ][og].group_object:
-            used_group_ogs.add(group_og.id)
-            used_group_ogs = rec_group_og(used_group_ogs, root, box, group_og.id, typ)
-    return used_group_ogs
-
-
-def del_1(root, box, delete_first, orphaned_dict, ret):
-    del_f_count = len(delete_first)
-    while del_f_count:
-        for og in delete_first:
-            if orphaned_dict[og]["deleted"] == 1:
-                continue
-            flag = 0
-            for og2 in delete_first:
-                if orphaned_dict[og]["deleted"] == 1:
-                    continue
-                if og in orphaned_dict[og2]["group_ogs"]:
-                    flag = 1
-                    break
-            if not flag:
-                if orphaned_dict[og]["og_type"] in ret.keys():
-                    ret[orphaned_dict[og]["og_type"]].append(og)
-                else:
-                    ret[orphaned_dict[og]["og_type"]] = [og]
-
-                del_f_count -= 1
-                orphaned_dict[og]["deleted"] = 1
-                #print og + ": "
-                #print orphaned_dict[og]["group_ogs"]
-                del root.devices.device[box].config.asa__object_group[orphaned_dict[og]["og_type"]][og]
-
+        #Provides an error message if there are no object groups to be removed for a device
+        if empty:
+            stat = "No Object Groups to Remove"
     return ret
 
-
-def del_2(root, box, delete_second, orphaned_dict, ret):
-    for og in delete_second:
-        if orphaned_dict[og]["og_type"] in ret.keys():
-            ret[orphaned_dict[og]["og_type"]].append(og)
-        else:
-            ret[orphaned_dict[og]["og_type"]] = [og]
-        #print og + ':'
-        del root.devices.device[box].config.asa__object_group[orphaned_dict[og]["og_type"]][og]
-
-    return ret
 
 
 def flag_ogs_in_box_test(box):
@@ -191,6 +133,17 @@ def flag_ogs_in_box_test(box):
 
     return ret
 
+def banish(og, acl):
+    """
+    A function that iterates through the rules of an acl list checking for the
+    object group name within the rule. If found, the function returns true. If
+    not found, function returns false.
+    """
+    for rule in acl:
+        if og in rule:
+            return True
+    return False
+
 def remove_ogs(box, og_id, og_type):
     """
     A function that removes the object group from the object group list using
@@ -203,3 +156,10 @@ def remove_ogs(box, og_id, og_type):
             stat = "Success"
         except:
             stat = "Error Removing"
+
+
+def no_ogs_error(box):
+    """
+    This function prints an error message if there are no object groups to be removed for a device.
+    """
+    print "Error: There are no object groups that need to be removed for device ",box,"."
