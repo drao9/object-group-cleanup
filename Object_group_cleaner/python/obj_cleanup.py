@@ -196,7 +196,7 @@ def flag_ogs_in_box_test(box):
         delete_second = orphaned_ogs.difference(delete_first)
 
         ret = srch_1(root, box, delete_first, orphaned_dict, ret)
-        ret = srch_2(root, box, delete_second, orphaned_dict, ret
+        ret = srch_2(root, box, delete_second, orphaned_dict, ret)
 
 
     #if empty:
