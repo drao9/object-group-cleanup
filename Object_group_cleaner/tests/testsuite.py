@@ -4,7 +4,6 @@ import ncs
 import socket
 import time
 
-
 class TestOGC(unittest.TestCase):
     """
     This program tests if the Object_group_cleaner tool is able to search all the object group list and checks if there are object groups that need to be deleted.

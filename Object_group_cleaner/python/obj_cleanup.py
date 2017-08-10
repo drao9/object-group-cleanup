@@ -240,8 +240,6 @@ def srch_2(root, box, delete_second, orphaned_dict, ret):
             ret[orphaned_dict[og]["og_type"]].append(og)
         else:
             ret[orphaned_dict[og]["og_type"]] = [og]
-        #print og + ':'
-        #del root.devices.device[box].config.asa__object_group[orphaned_dict[og]["og_type"]][og]
 
     return ret
 
