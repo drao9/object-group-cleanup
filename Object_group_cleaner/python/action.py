@@ -70,9 +70,8 @@ class ActionHandler(Action):
             for key, value in og_for_removal.items():
                 for og in value:
                     result = output.orphaned_object_groups.create()
-                        result.object_group = og
-                        result.og_type = key
-
+                    result.object_group = og
+                    result.og_type = key
 
         elif name == "remove":
             obj_groups = helpers.build_og_list(input)
