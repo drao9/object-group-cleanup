@@ -52,6 +52,7 @@ class ActionHandler(Action):
             count = 0
             #devices = helpers.build_device_list(input)
             self.log.info("input: ", input)
+            self.log.info("device: ", input.device)
             """
             self.log.info("device: ", input.device)
             device = input.device
