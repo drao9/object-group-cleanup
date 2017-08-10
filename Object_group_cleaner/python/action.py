@@ -37,7 +37,7 @@ class ActionHandler(Action):
             input -- input node (maagic.Node)
             output -- output node (maagic.Node)
         """
-        _ncs.dp.action_set_timeout(uinfo, 500)
+        _ncs.dp.action_set_timeout(uinfo, 1000)
 
         self.log.info(uinfo.addr)
         self.log.info(uinfo.usid)
