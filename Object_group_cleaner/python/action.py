@@ -9,8 +9,6 @@ See the README file for more information
 """
 from __future__ import print_function
 import sys
-
-# import your_audit_name_here # Copy and change this to the name of your Python File
 import ncs
 from datetime import datetime
 import time
@@ -23,6 +21,7 @@ import helpers
 import obj_cleanup
 
 DATE_FORMAT = "%H:%M:%S.%f"
+
 
 class ActionHandler(Action):
     """This class implements the dp.Action class."""
@@ -38,8 +37,6 @@ class ActionHandler(Action):
             input -- input node (maagic.Node)
             output -- output node (maagic.Node)
         """
-        #TODO determine logging standards
-
         _ncs.dp.action_set_timeout(uinfo, 500)
 
         self.log.info(uinfo.addr)
@@ -53,30 +50,28 @@ class ActionHandler(Action):
 
         if name == "cleanup":
             count = 0
-            devices = helpers.build_device_list(input)
-            for device in devices:
-                self.log.info("device: ",device)
-                og_for_removal, stat = obj_cleanup.search_and_destroy(device)
-                for key in og_for_removal:
-                    count += len(og_for_removal[key])
-                for key, value in og_for_removal.items():
-                    for og in value:
-                        result = output.deleted_object_groups.create()
-                        result.object_group = og
-                        result.og_type = key
+            self.log.info("input: ", input)
+            self.log.info("device: ", input.device)
+            device = input.device
+            og_for_removal, stat = obj_cleanup.search_and_destroy(device)
+            for key in og_for_removal:
+                count += len(og_for_removal[key])
+            for key, value in og_for_removal.items():
+                for og in value:
+                    result = output.deleted_object_groups.create()
+                    result.object_group = og
+                    result.og_type = key
             output.number_of_ogs_deleted = count
             output.stat = stat
 
         elif name == "search":
-            devices = helpers.build_device_list(input)
-            for device in devices:
-                self.log.info("device: ",device)
-                og_for_removal = obj_cleanup.flag_ogs_in_box_test(device)
-                for key, value in og_for_removal.items():
-                    for og in value:
-                        result = output.orphaned_object_groups.create()
-                        result.object_group = og
-                        result.og_type = key
+            device = input.device
+            og_for_removal = obj_cleanup.flag_ogs_in_box_test(device)
+            for key, value in og_for_removal.items():
+                for og in value:
+                    result = output.orphaned_object_groups.create()
+                    result.object_group = og
+                    result.og_type = key
 
         elif name == "remove":
             obj_groups = helpers.build_og_list(input)
@@ -87,7 +82,6 @@ class ActionHandler(Action):
                 result.object_group = obj[2]
             output.stat = "Success"
 
-
         else:
             # Log & return general failures
             self.log.debug("got bad operation: {0}".format(name))
@@ -95,10 +89,10 @@ class ActionHandler(Action):
 
         end = (datetime.strptime(str(datetime.now().time()), DATE_FORMAT))
         output.end_time = time.strftime("%H:%M:%S")
-        output.run_time = str(end-start)
-        self.log.info("start time: ",start)
+        output.run_time = str(end - start)
+        self.log.info("start time: ", start)
         self.log.info("end time: ", end)
-        self.log.info("runtime: ",(end-start))
+        self.log.info("runtime: ", (end - start))
 
 # ---------------------------------------------
 # COMPONENT THREAD THAT WILL BE STARTED BY NCS.
