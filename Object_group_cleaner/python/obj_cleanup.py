@@ -199,10 +199,10 @@ def flag_ogs_in_box_test(box):
         ret = srch_2(root, box, delete_second, orphaned_dict, ret
 
 
-    if empty:
-        stat = "No Orphaned Object Groups"
-    else:
-        stat = "Success"
+    #if empty:
+        #stat = "No Orphaned Object Groups"
+    #else:
+        #stat = "Success"
 
     return ret
 
