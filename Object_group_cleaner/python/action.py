@@ -50,13 +50,9 @@ class ActionHandler(Action):
 
         if name == "cleanup":
             count = 0
-            #devices = helpers.build_device_list(input)
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
-            """
-            self.log.info("device: ", input.device)
             device = input.device
-            self.log.info("device ", device)
             og_for_removal, stat = obj_cleanup.search_and_destroy(device)
             for key in og_for_removal:
                 count += len(og_for_removal[key])
@@ -67,19 +63,16 @@ class ActionHandler(Action):
                     result.og_type = key
             output.number_of_ogs_deleted = count
             output.stat = stat
-            """
+
         elif name == "search":
-            #devices = helpers.build_device_list(input)
-            #for device in devices:
-            #    self.log.info("device: ", device)
-            """
+            device = input.device
             og_for_removal = obj_cleanup.flag_ogs_in_box_test(device)
             for key, value in og_for_removal.items():
                 for og in value:
                     result = output.orphaned_object_groups.create()
                         result.object_group = og
                         result.og_type = key
-            """
+
 
         elif name == "remove":
             obj_groups = helpers.build_og_list(input)
