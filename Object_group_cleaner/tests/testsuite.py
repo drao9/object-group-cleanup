@@ -2,16 +2,17 @@ import unittest
 import constants
 import ncs
 import socket
-import time 
+import time
 
 class TestOGC(unittest.TestCase):
     """
     This program tests if the Object_group_cleaner tool is able to search all the object group list and checks if there are object groups that need to be deleted.
     """
+
     def test_search_empty(self):
-        """
-        With this test case, we create a netsim such that none of the object groups need to be deteled. This test passes if no object groups are returned.
-        """
+
+        #With this test case, we create a netsim such that none of the object groups need to be deteled. This test passes if no object groups are returned.
+
 
         orphaned_ogs = {}
         empty_dict = {}
@@ -70,6 +71,7 @@ class TestOGC(unittest.TestCase):
                         else:
                             orphaned_ogs[og.og_type] = [og.object_group]
 
+
                     self.assertEqual(orphaned_ogs, empty_dict)
 
                 with m.start_write_trans() as t:
@@ -88,11 +90,11 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_seach_reg(self):
-        """
-        With this test case, we create a netsim such that an arbitrary number of the object groups need to be deteled. This test passes if the required object groups are returned.
-        """
 
-        orphaned_ogs = {}
+        #With this test case, we create a netsim such that an arbitrary number of the object groups need to be deteled. This test passes if the required object groups are returned.
+
+
+        orphaned_ogs = []
 
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
@@ -143,12 +145,8 @@ class TestOGC(unittest.TestCase):
                     org_gps = output1.orphaned_object_groups
 
                     for og in org_gps:
-                        if og.og_type in orphaned_ogs.keys():
-                            orphaned_ogs[og.og_type].append(og.object_group)
-                        else:
-                            orphaned_ogs[og.og_type] = [og.object_group]
-
-                    self.assertEqual(orphaned_ogs, constants.answer)
+                        orphaned_ogs.append(og.object_group)
+                    self.assertEqual(set(orphaned_ogs), set(constants.answer))
 
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
@@ -166,9 +164,9 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_perform(self):
-        """
-        With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
-        """
+
+        #With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
+
 
         orphaned_ogs = {}
 
@@ -238,9 +236,9 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_remove(self):
-        """
-        With this test case, we create a netsim such that all of the object groups need to be deteled. This test passes if all object groups are returned and there are none left.
-        """
+
+        #With this test case, we create a netsim such that all of the object groups need to be deteled. This test passes if all object groups are returned and there are none left.
+
         orphaned_ogs = {}
         empty_dict = []
         og_list = []
@@ -311,6 +309,7 @@ class TestOGC(unittest.TestCase):
                         del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
 
                     t.apply()
+
 
 if __name__ == '__main__':
     unittest.main()
