@@ -213,6 +213,7 @@ class TestOGC(unittest.TestCase):
                     #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
 
+                    b = time.time()
                     output1 = root.Object_group_cleaner.cleanup(input1)
                     af = time.time()
                     run_time = af - b
