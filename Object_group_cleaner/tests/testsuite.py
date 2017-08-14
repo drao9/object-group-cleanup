@@ -227,7 +227,7 @@ class TestOGC(unittest.TestCase):
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
                         og_num = og + str(num_types) + '_'
                         num_types = num_types + 1
-                        for j in range(20000):
+                        for j in range(19000):
                             fake_og = og_num + str(j)
                             root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
 
@@ -243,7 +243,7 @@ class TestOGC(unittest.TestCase):
                         acl_num = holder + str(i)
                         root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
                         rul_num = rul + str(i) + '_'
-                        for j in range(19970):
+                        for j in range(18970):
                             fake_rule = rul_num + str(j)
                             root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
 
@@ -264,7 +264,7 @@ class TestOGC(unittest.TestCase):
                     run_time = af - b
                     print run_time
 
-                    self.assertTrue(run_time < 1000)
+                    self.assertTrue(run_time < 500)
 
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
