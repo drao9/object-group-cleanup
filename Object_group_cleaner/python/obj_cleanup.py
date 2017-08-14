@@ -1,6 +1,5 @@
-import ncs
 import socket
-import time
+import ncs
 
 def search_and_destroy(box):
     """

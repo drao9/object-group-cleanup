@@ -1,25 +1,31 @@
+"""Unittest testsuite for Object Group Cleanup Tool"""
+
 import unittest
-import constants
-import ncs
 import socket
 import time
+import ncs
+import constants
 
 class TestOGC(unittest.TestCase):
     """
-    This program tests if the Object_group_cleaner tool is able to search all the object group list and checks if there are object groups that need to be deleted.
+    Test to ensure that the functions within the Object Group Cleaner Tool are
+    providing the correct output and are running efficiently.
     """
 
     def test_search_empty(self):
-
-        #With this test case, we create a netsim such that none of the object groups need to be deteled. This test passes if no object groups are returned.
-
+        """
+        Test case: All of the object groups are being used in the device's ACLs.
+        This test passes if no object groups are returned as orphaned object groups.
+        """
 
         orphaned_ogs = {}
         empty_dict = {}
 
+        #Begin NSO session
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -28,6 +34,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -35,6 +42,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Add 20 unique object groups to each of the Netsim's object group types
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -43,13 +51,14 @@ class TestOGC(unittest.TestCase):
                     num_types = 0
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
                         og_num = og + str(num_types) + '_'
-                        num_types = num_types + 1
+                        num_types += 1
                         for j in range(20):
                             fake_og = og_num + str(j)
                             root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
 
                     t.apply()
 
+                #Create the same amount of access lists as there are object group types and add 20 rules with the previously made object groups to each ACL
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -66,29 +75,29 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
-
+                #Call the search action and retreive the output
                 with m.start_write_trans() as t:
 
                     root = ncs.maagic.get_root(t)
-                    device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.search.get_input()
                     new_obj = input1
                     new_obj.device = constants.device_name
 
                     output1 = root.Object_group_cleaner.search(input1)
 
-                    end_time = output1.end_time
                     org_gps = output1.orphaned_object_groups
 
+                    #Add output to dictionary
                     for og in org_gps:
                         if og.og_type in orphaned_ogs.keys():
                             orphaned_ogs[og.og_type].append(og.object_group)
                         else:
                             orphaned_ogs[og.og_type] = [og.object_group]
 
-
+                    #Check that the output of the search function is empty
                     self.assertEqual(orphaned_ogs, empty_dict)
 
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -97,6 +106,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -105,15 +115,17 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_seach_reg(self):
-
-        #With this test case, we create a netsim such that an arbitrary number of the object groups need to be deteled. This test passes if the required object groups are returned.
-
+        """
+        Test case: Certain object groups are not used in the device's ACL.
+        This test passes if the correct object groups are returned from the search action.
+        """
 
         orphaned_ogs = []
 
+        #Begin NSO session
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
-
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -122,6 +134,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -129,6 +142,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Add 50 unique object groups to each of the Netsim's object group types
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -144,6 +158,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Create the same amount of access lists as there are object group types and add 20 rules with the previously made object groups to each ACL
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -160,24 +175,25 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Call the search action and retreive the output
                 with m.start_write_trans() as t:
 
                     root = ncs.maagic.get_root(t)
-                    device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.search.get_input()
                     new_obj = input1
-                    #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
 
                     output1 = root.Object_group_cleaner.search(input1)
-
-                    end_time = output1.end_time
                     org_gps = output1.orphaned_object_groups
 
+                    #add object groups from output to a list
                     for og in org_gps:
                         orphaned_ogs.append(og.object_group)
+
+                    #check whether the output is the same as the correct answer
                     self.assertEqual(set(orphaned_ogs), set(constants.answer))
 
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -186,6 +202,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -194,14 +211,15 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_perform(self):
-
-        #With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
-
-        orphaned_ogs = {}
+        """
+        Test case: performance test of the cleanup action.
+        The cleanup action should run in less than 600 seconds for this particular netsim set up.
+        """
 
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
+                #Clear out objects groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -210,6 +228,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -217,6 +236,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Add 18,000 unique object groups to each of the Netsim's object group types
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     og = "test_og_"
@@ -231,6 +251,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Create the same amount of access lists as there are object group types and add 17,970 rules with the previously made object groups to each ACL
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -246,21 +267,22 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Call the cleanup action and record the run time
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
-                    device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.cleanup.get_input()
                     new_obj = input1
-                    #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
+
                     b = time.time()
-                    output1 = root.Object_group_cleaner.cleanup(input1)
+                    root.Object_group_cleaner.cleanup(input1)
                     af = time.time()
                     run_time = af - b
-                    print run_time
 
+                    #Assert that cleanup runs in less than 600 seconds
                     self.assertTrue(run_time < 600)
 
+                #Clear out objects groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -269,6 +291,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -277,16 +300,19 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
     def test_remove(self):
+        """
+        Test case: None of the object groups are being used in the access list, thus all
+        are orphaned. This test will pass if the device's object group list is empty.
+        """
 
-        #With this test case, we create a netsim such that all of the object groups need to be deteled. This test passes if all object groups are returned and there are none left.
-
-        orphaned_ogs = {}
-        empty_dict = []
+        empty_list = []
         og_list = []
 
+        #Begin NSO session
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -295,6 +321,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
@@ -302,6 +329,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Add 20 unique object groups to each of the Netsim's object group types
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
@@ -317,40 +345,37 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Create empty access lists
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
 
                     holder = "access_list_"
-                    rul = "extended permit icmp object-group test_og_"
 
                     for i in range(num_types):
                         acl_num = holder + str(i)
                         root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
-                        rul_num = rul + str(i) + '_'
-                        for j in range(0):
-                            fake_rule = rul_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
 
                     t.apply()
 
-
+                #Call the cleanup action and check the device's object group list
                 with m.start_write_trans() as t:
 
                     root = ncs.maagic.get_root(t)
-                    device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.cleanup.get_input()
                     new_obj = input1
-                    #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
 
-                    output1 = root.Object_group_cleaner.cleanup(input1)
+                    root.Object_group_cleaner.cleanup(input1)
 
+                    #Add any object groups in the device's object group list to og_list
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
                         for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
                             og_list.append(og.id)
 
-                    self.assertEqual(og_list, empty_dict)
+                    #Assert that og_list is empty
+                    self.assertEqual(og_list, empty_list)
 
+                #Clear out object groups in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
@@ -359,6 +384,7 @@ class TestOGC(unittest.TestCase):
 
                     t.apply()
 
+                #Clear out access lists in Netsim
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
