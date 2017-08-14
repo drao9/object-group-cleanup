@@ -219,7 +219,7 @@ class TestOGC(unittest.TestCase):
 
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
-
+                    print 'A'
                     og = "test_og_"
 
                     num_types = 0
@@ -237,7 +237,7 @@ class TestOGC(unittest.TestCase):
 
                     holder = "access_list_"
                     rul = "extended permit icmp object-group test_og_"
-
+                    print 'B'
                     for i in range(num_types):
                         acl_num = holder + str(i)
                         root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
@@ -249,14 +249,14 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
                 with m.start_write_trans() as t:
-
+                    print 'C'
                     root = ncs.maagic.get_root(t)
                     device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.cleanup.get_input()
                     new_obj = input1
                     #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
-
+                    print 'D'
                     b = time.time()
                     output1 = root.Object_group_cleaner.cleanup(input1)
                     af = time.time()
