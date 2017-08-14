@@ -197,7 +197,6 @@ class TestOGC(unittest.TestCase):
 
         #With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
 
-
         orphaned_ogs = {}
 
         with ncs.maapi.Maapi() as m:
