@@ -198,11 +198,13 @@ class TestOGC(unittest.TestCase):
         #With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
 
         orphaned_ogs = {}
+        print 'A'
 
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
                 with m.start_write_trans() as t:
+                    print 'B'
                     root = ncs.maagic.get_root(t)
                     for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
                         for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
@@ -211,6 +213,7 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
                 with m.start_write_trans() as t:
+                    print 'C'
                     root = ncs.maagic.get_root(t)
                     for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
                         del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
@@ -219,7 +222,7 @@ class TestOGC(unittest.TestCase):
 
                 with m.start_write_trans() as t:
                     root = ncs.maagic.get_root(t)
-                    print 'A'
+                    print 'D'
                     og = "test_og_"
 
                     num_types = 0
@@ -237,7 +240,7 @@ class TestOGC(unittest.TestCase):
 
                     holder = "access_list_"
                     rul = "extended permit icmp object-group test_og_"
-                    print 'B'
+                    print 'E'
                     for i in range(num_types):
                         acl_num = holder + str(i)
                         root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
@@ -249,14 +252,14 @@ class TestOGC(unittest.TestCase):
                     t.apply()
 
                 with m.start_write_trans() as t:
-                    print 'C'
+                    print 'F'
                     root = ncs.maagic.get_root(t)
                     device = root.devices.device[constants.device_name]
                     input1 = root.Object_group_cleaner.cleanup.get_input()
                     new_obj = input1
                     #new_obj.input_type = constants.device_typ
                     new_obj.device = constants.device_name
-                    print 'D'
+                    print 'G'
                     b = time.time()
                     output1 = root.Object_group_cleaner.cleanup(input1)
                     af = time.time()
