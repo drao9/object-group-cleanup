@@ -8,7 +8,7 @@ class TestOGC(unittest.TestCase):
     """
     This program tests if the Object_group_cleaner tool is able to search all the object group list and checks if there are object groups that need to be deleted.
     """
-    """
+
     def test_search_empty(self):
 
         #With this test case, we create a netsim such that none of the object groups need to be deteled. This test passes if no object groups are returned.
@@ -192,7 +192,7 @@ class TestOGC(unittest.TestCase):
                         del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
 
                     t.apply()
-    """
+
     def test_perform(self):
 
         #With this test case, we create a netsim with 5000 object groups and 4500 ACL lines and checked if the tool runs within 500 secs.
@@ -275,7 +275,7 @@ class TestOGC(unittest.TestCase):
                         del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
 
                     t.apply()
-    """
+
     def test_remove(self):
 
         #With this test case, we create a netsim such that all of the object groups need to be deteled. This test passes if all object groups are returned and there are none left.
@@ -365,7 +365,7 @@ class TestOGC(unittest.TestCase):
                         del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
 
                     t.apply()
-    """
+
 
 if __name__ == '__main__':
     unittest.main()
