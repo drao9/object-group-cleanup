@@ -18,6 +18,12 @@ module input_output {
     leaf run_time {
       type string;
     }
+    leaf stat {
+      type string;
+    }
+    leaf number_of_orphaned {
+      type uint32;
+    }
     list orphaned_object_groups {
       leaf og_type {
         type string;

@@ -53,7 +53,7 @@ class ActionHandler(Action):
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
             device = input.device
-            og_for_removal, stat = obj_cleanup.search_and_destroy(device)
+            og_for_removal, stat = obj_cleanup.cleanup(device)
             for key in og_for_removal:
                 count += len(og_for_removal[key])
             for key, value in og_for_removal.items():
@@ -65,22 +65,31 @@ class ActionHandler(Action):
             output.stat = stat
 
         elif name == "search":
+            count = 0
+            self.log.info("input: ", input)
+            self.log.info("device: ", input.device)
             device = input.device
-            og_for_removal = obj_cleanup.flag_ogs_in_box_test(device)
+            og_for_removal, stat = obj_cleanup.search(device)
+            for key in og_for_removal:
+                count += len(og_for_removal[key])
             for key, value in og_for_removal.items():
                 for og in value:
                     result = output.orphaned_object_groups.create()
                     result.object_group = og
                     result.og_type = key
+            output.number_of_orphaned = count
+            output.stat = stat
 
         elif name == "remove":
+            self.log.info("input: ", input)
+            self.log.info("device: ", input.device)
             obj_groups = helpers.build_og_list(input)
             for obj in obj_groups:
-                obj_cleanup.remove_ogs(obj[0], obj[1], obj[2])
+                stat = obj_cleanup.remove_ogs(obj[0], obj[1], obj[2])
                 result = output.deleted_object_groups.create()
                 result.og_type = obj[1]
                 result.object_group = obj[2]
-            output.stat = "Success"
+            output.stat = stat
 
         else:
             # Log & return general failures

@@ -1,7 +1,7 @@
 import socket
 import ncs
 
-def search_and_destroy(box):
+def cleanup(box):
     """
 
     """
@@ -17,8 +17,8 @@ def search_and_destroy(box):
     delete_first = set()
 
     #Creating transaction and setting root to access NSO
-    with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as t:
-        root = ncs.maagic.get_root(t)
+    with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
+        root = ncs.maagic.get_root(tran)
 
         og_list, og_typ, acl_list = nso_to_python(box, root, og_list, og_typ, acl_list)
 
@@ -31,7 +31,7 @@ def search_and_destroy(box):
         ret = del_2(root, box, delete_second, orphaned_dict, ret)
 
         try:
-            t.apply()
+            tran.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
         except ncs.MaagicError, err:
@@ -148,7 +148,7 @@ def del_2(root, box, delete_second, orphaned_dict, ret):
     return ret
 
 
-def flag_ogs_in_box_test(box):
+def search(box):
     """
     A function that returns a dictionary of the object groups that are not found
     in any of the inputted device's access lists, organized by object group type.
@@ -166,8 +166,8 @@ def flag_ogs_in_box_test(box):
     delete_first = set()
 
     #Creating transaction and setting root to access NSO
-    with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as t:
-        root = ncs.maagic.get_root(t)
+    with ncs.maapi.single_read_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
+        root = ncs.maagic.get_root(tran)
 
         og_list, og_typ, acl_list = nso_to_python(box, root, og_list, og_typ, acl_list)
 
@@ -179,8 +179,9 @@ def flag_ogs_in_box_test(box):
         ret = srch_1(delete_first, orphaned_dict, ret)
         ret = srch_2(delete_second, orphaned_dict, ret)
 
+        stat = "Success"
 
-    return ret
+    return ret, stat
 
 def srch_1(delete_first, orphaned_dict, ret):
     """
@@ -225,11 +226,14 @@ def remove_ogs(box, og_id, og_type):
     A function that removes the object group from the object group list using
     the arguments passed: device name, object group name, and object group type.
     """
-    with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as t:
-        root = ncs.maagic.get_root(t)
+    with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
+        root = ncs.maagic.get_root(tran)
         del root.devices.device[box].config.asa__object_group[og_type][og_id]
         try:
-            t.apply()
+            tran.apply()
             stat = "Success"
-        except:
-            stat = "Error Removing"
+        #Provides error message if there is a problem removing an OG
+        except ncs.MaagicError, err:
+            stat = ncs.MaagicError, err
+
+    return stat
