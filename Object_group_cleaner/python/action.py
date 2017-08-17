@@ -69,7 +69,7 @@ class ActionHandler(Action):
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
             device = input.device
-            og_for_removal, stat = obj_cleanup.search(device)
+            og_for_removal = obj_cleanup.search(device)
             for key in og_for_removal:
                 count += len(og_for_removal[key])
             for key, value in og_for_removal.items():
@@ -78,7 +78,6 @@ class ActionHandler(Action):
                     result.object_group = og
                     result.og_type = key
             output.number_of_orphaned = count
-            output.stat = stat
 
         elif name == "remove":
             self.log.info("input: ", input)

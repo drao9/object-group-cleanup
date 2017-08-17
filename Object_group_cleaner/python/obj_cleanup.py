@@ -5,12 +5,11 @@ def cleanup(box):
     """
 
     """
-    #Initializing python lists
+    #Initializing python lists and sets
     og_list = []
     og_typ = []
     acl_list = []
     ret = {}
-    #empty = True
     used_group_ogs = set()
     orphaned_ogs = set()
     orphaned_dict = {}
@@ -159,7 +158,6 @@ def search(box):
     og_typ = []
     acl_list = []
     ret = {}
-    #empty = True
     used_group_ogs = set()
     orphaned_ogs = set()
     orphaned_dict = {}
@@ -179,9 +177,7 @@ def search(box):
         ret = srch_1(delete_first, orphaned_dict, ret)
         ret = srch_2(delete_second, orphaned_dict, ret)
 
-        stat = "Success"
-
-    return ret, stat
+    return ret
 
 def srch_1(delete_first, orphaned_dict, ret):
     """
