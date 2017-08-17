@@ -83,12 +83,15 @@ class ActionHandler(Action):
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
             obj_groups = helpers.build_og_list(input)
+            outer_stat = "Success"
             for obj in obj_groups:
                 stat = obj_cleanup.remove_ogs(obj[0], obj[1], obj[2])
+                if stat != "Success":
+                    outer_stat = stat
                 result = output.deleted_object_groups.create()
                 result.og_type = obj[1]
                 result.object_group = obj[2]
-            output.stat = stat
+            output.stat = outer_stat
 
         else:
             # Log & return general failures

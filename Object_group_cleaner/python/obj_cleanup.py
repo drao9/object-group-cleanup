@@ -164,9 +164,12 @@ def del_1(root, box, delete_first, orphaned_dict, ret):
             for og2 in delete_first:
                 if orphaned_dict[og2]["deleted"] == 1:
                     continue
+                #If the current object group is a group-object, set flag = 1
                 if og in orphaned_dict[og2]["group_ogs"]:
                     flag = 1
                     break
+            #If object group is not a group-object in a non-deleted delete first object group,
+            #add to dictionary, decrement delete first count, set delete flag to 1, and delete
             if not flag:
                 if orphaned_dict[og]["og_type"] in ret.keys():
                     ret[orphaned_dict[og]["og_type"]].append(og)
@@ -182,6 +185,9 @@ def del_1(root, box, delete_first, orphaned_dict, ret):
 
 def del_2(root, box, delete_second, orphaned_dict, ret):
     """
+    A function that deletes the remaining orphaned object groups and adds them to the dictionary
+    that will be returned. It returns:
+    1. ret: A dictionary organized by object group type with all of the deleted object groups.
     """
     for og in delete_second:
         if orphaned_dict[og]["og_type"] in ret.keys():
@@ -197,6 +203,8 @@ def search(box):
     """
     A function that returns a dictionary of the object groups that are not found
     in any of the inputted device's access lists, organized by object group type.
+    It returns:
+    1. ret: A dictionary organized by object group type with all of the deleted object groups.
     """
 
     #Initializing python lists
@@ -213,13 +221,17 @@ def search(box):
     with ncs.maapi.single_read_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
         root = ncs.maagic.get_root(tran)
 
+        #Converting access lists and object group list to python lists
         og_list, og_typ, acl_list = nso_to_python(box, root, og_list, og_typ, acl_list)
 
+        #Finding the unused object groups and placing them in sets for prioritization
         orphaned_ogs, delete_first, used_group_ogs, orphaned_dict = find_orphaned_og(root,
         box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, delete_first, orphaned_dict)
 
+        #Prioritize which orphaned object groups need to be deleted first
         delete_first, delete_second = prioritize_del(orphaned_ogs, used_group_ogs, delete_first)
 
+        #Add the first group and then the second group to the return dictionary
         ret = srch_1(delete_first, orphaned_dict, ret)
         ret = srch_2(delete_second, orphaned_dict, ret)
 
@@ -227,20 +239,32 @@ def search(box):
 
 def srch_1(delete_first, orphaned_dict, ret):
     """
-
+    A function that adds the object groups that have group-objects to the ret dictionary in
+    this specific order: object groups that are not group-objects for any other object group
+    are deleted first (avoiding NSO error). It also adds all of the orphaned object groups to
+    a dictionary. It returns:
+    1. ret: A dictionary organized by object group type with all of the deleted object groups.
     """
+    #The number of object groups that are left to delete first
     del_f_count = len(delete_first)
+    #While there are still object groups to delete within delete first
     while del_f_count:
         for og in delete_first:
+            #If that object group has already been deleted, move on to the next object group
             if orphaned_dict[og]["deleted"] == 1:
                 continue
+            #flag indicates whether the current object group is a group-object within another
+            #object group inside delete first that has yet to be deleted
             flag = 0
             for og2 in delete_first:
-                if orphaned_dict[og]["deleted"] == 1:
+                if orphaned_dict[og2]["deleted"] == 1:
                     continue
+                #If the current object group is a group-object, set flag = 1
                 if og in orphaned_dict[og2]["group_ogs"]:
                     flag = 1
                     break
+            #If object group is not a group-object in a non-deleted delete first object group,
+            #add to dictionary, decrement delete first count, set delete flag to 1, and delete
             if not flag:
                 if orphaned_dict[og]["og_type"] in ret.keys():
                     ret[orphaned_dict[og]["og_type"]].append(og)
@@ -254,6 +278,11 @@ def srch_1(delete_first, orphaned_dict, ret):
 
 
 def srch_2(delete_second, orphaned_dict, ret):
+    """
+    A function that adds the remaining orphaned object groups to the dictionary
+    that will be returned. It returns:
+    1. ret: A dictionary organized by object group type with all of the deleted object groups.
+    """
     for og in delete_second:
         if orphaned_dict[og]["og_type"] in ret.keys():
             ret[orphaned_dict[og]["og_type"]].append(og)
@@ -267,6 +296,8 @@ def remove_ogs(box, og_id, og_type):
     """
     A function that removes the object group from the object group list using
     the arguments passed: device name, object group name, and object group type.
+    It returns:
+    1. stat: Status of applying delete to device (Success or NSO error)
     """
     with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
         root = ncs.maagic.get_root(tran)
