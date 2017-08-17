@@ -34,8 +34,8 @@ def search_and_destroy(box):
             t.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except Exception, err:
-            stat = Exception, err
+        except ncs.MaagicError, err:
+            stat = ncs.MaagicError, err
 
         return ret, stat
 
