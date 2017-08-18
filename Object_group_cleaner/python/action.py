@@ -1,12 +1,3 @@
-"""
-NCS Action Package example.
-
-Implements a package with actions
-(C) 2015 Tail-f Systems
-Permission to use this code as a starting point hereby granted
-
-See the README file for more information
-"""
 from __future__ import print_function
 import sys
 import ncs
@@ -53,7 +44,7 @@ class ActionHandler(Action):
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
             device = input.device
-            og_for_removal, stat = obj_cleanup.cleanup(device)
+            og_for_removal, stat = obj_cleanup.cleanup_or_search(device, True)
             for key in og_for_removal:
                 count += len(og_for_removal[key])
             for key, value in og_for_removal.items():
@@ -69,7 +60,7 @@ class ActionHandler(Action):
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
             device = input.device
-            og_for_removal = obj_cleanup.search(device)
+            og_for_removal = obj_cleanup.cleanup_or_search(device, False)
             for key in og_for_removal:
                 count += len(og_for_removal[key])
             for key, value in og_for_removal.items():
