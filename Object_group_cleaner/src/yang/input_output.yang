@@ -88,11 +88,9 @@ module input_output {
           type string;
         }
         list inputs {
-          tailf:info "Input values for remove.";
-          leaf device {
-            type leafref {
-              path "/ncs:devices/ncs:device/ncs:name";
-            }
+          tailf:info "Input values for remove";
+          leaf device_name {
+            type string;
           }
           leaf og_type {
             type enumeration {
