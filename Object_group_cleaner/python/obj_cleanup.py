@@ -221,7 +221,7 @@ def remove_ogs(box, og_type, og_id):
             tran.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except mag.MaagicError, err:
+    except mag.MaagicError, err and cb_action.error, err:
             stat = err
 
     return stat
