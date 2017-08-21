@@ -1,7 +1,6 @@
 import socket
 import ncs
 import _ncs
-import ncs.maagic as mag
 
 def cleanup_or_search(box, to_del):
     """
@@ -45,8 +44,8 @@ def cleanup_or_search(box, to_del):
                 tran.apply()
                 stat = "Success"
 
-            except mag.MaagicError, err:
-                stat = mag.MaagicError, err
+            except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
+                stat = err
 
             return ret, stat
     #For search
@@ -83,8 +82,8 @@ def nso_to_python(box, root, og_list, og_typ, acl_list):
 def rec_group_og(used_group_ogs, root, box, og, typ):
     """
     A recursive function that adds a used object group's group-objects (object groups inside
-    of object groups) to a set and recursively recalls itself to check if the group objects
-    added have any group objects themselves to add as well. It returns:
+    of object groups) to a set (used_group_ogs) and recursively recalls itself to check if
+    the group objects added have any group objects themselves to add as well. It returns:
     1. used_group_ogs: Set of used group-objects that should not be removed.
     """
     if root.devices.device[box].config.asa__object_group[typ][og].group_object:
@@ -222,7 +221,7 @@ def remove_ogs(box, og_type, og_id):
             tran.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except (_ncs.error.Error, mag.MaagicError) as err:
+    except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
             stat = err
 
     return stat

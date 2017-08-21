@@ -6,6 +6,58 @@ import time
 import ncs
 import constants
 
+def clear_netsim(m):
+    #Clear out object groups in Netsim
+    with m.start_write_trans() as t:
+        root = ncs.maagic.get_root(t)
+        for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
+            for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
+                del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
+
+        t.apply()
+
+    #Clear out access lists in Netsim
+    with m.start_write_trans() as t:
+        root = ncs.maagic.get_root(t)
+        for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
+            del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
+
+        t.apply()
+
+def setup_netsim(m, num_ogs, num_rules):
+    #Add 20 unique object groups to each of the Netsim's object group types
+    with m.start_write_trans() as t:
+        root = ncs.maagic.get_root(t)
+
+        og = "test_og_"
+
+        num_types = 0
+        for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
+            og_num = og + str(num_types) + '_'
+            num_types += 1
+            for j in range(num_ogs):
+                fake_og = og_num + str(j)
+                root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
+
+        t.apply()
+
+    #Create the same amount of access lists as there are object group types and add 20 rules with the previously made object groups to each ACL
+    with m.start_write_trans() as t:
+        root = ncs.maagic.get_root(t)
+
+        holder = "access_list_"
+        rul = "extended permit icmp object-group test_og_"
+
+        for i in range(num_types):
+            acl_num = holder + str(i)
+            root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
+            rul_num = rul + str(i) + '_'
+            for j in range(num_rules):
+                fake_rule = rul_num + str(j)
+                root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
+
+        t.apply()
+
 class TestOGC(unittest.TestCase):
     """
     Test to ensure that the functions within the Object Group Cleaner Tool are
@@ -25,55 +77,9 @@ class TestOGC(unittest.TestCase):
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
+                clear_netsim(m)
 
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
-
-                #Add 20 unique object groups to each of the Netsim's object group types
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    og = "test_og_"
-
-                    num_types = 0
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        og_num = og + str(num_types) + '_'
-                        num_types += 1
-                        for j in range(20):
-                            fake_og = og_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
-
-                    t.apply()
-
-                #Create the same amount of access lists as there are object group types and add 20 rules with the previously made object groups to each ACL
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    holder = "access_list_"
-                    rul = "extended permit icmp object-group test_og_"
-
-                    for i in range(num_types):
-                        acl_num = holder + str(i)
-                        root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
-                        rul_num = rul + str(i) + '_'
-                        for j in range(20):
-                            fake_rule = rul_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
-
-                    t.apply()
+                setup_netsim(m, 20, 20)
 
                 #Call the search action and retreive the output
                 with m.start_write_trans() as t:
@@ -97,22 +103,7 @@ class TestOGC(unittest.TestCase):
                     #Check that the output of the search function is empty
                     self.assertEqual(orphaned_ogs, empty_dict)
 
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
-
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
+                clear_netsim(m)
 
     def test_seach_reg(self):
         """
@@ -125,55 +116,10 @@ class TestOGC(unittest.TestCase):
         #Begin NSO session
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
 
-                    t.apply()
+                clear_netsim(m)
 
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
-
-                #Add 50 unique object groups to each of the Netsim's object group types
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    og = "test_og_"
-
-                    num_types = 0
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        og_num = og + str(num_types) + '_'
-                        num_types = num_types + 1
-                        for j in range(50):
-                            fake_og = og_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
-
-                    t.apply()
-
-                #Create the same amount of access lists as there are object group types and add 20 rules with the previously made object groups to each ACL
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    holder = "access_list_"
-                    rul = "extended permit icmp object-group test_og_"
-
-                    for i in range(num_types):
-                        acl_num = holder + str(i)
-                        root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
-                        rul_num = rul + str(i) + '_'
-                        for j in range(20):
-                            fake_rule = rul_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
-
-                    t.apply()
+                setup_netsim(m, 50, 20)
 
                 #Call the search action and retreive the output
                 with m.start_write_trans() as t:
@@ -193,22 +139,7 @@ class TestOGC(unittest.TestCase):
                     #check whether the output is the same as the correct answer
                     self.assertEqual(set(orphaned_ogs), set(constants.answer))
 
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
-
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
+                clear_netsim(m)
 
     def test_perform(self):
         """
@@ -219,53 +150,9 @@ class TestOGC(unittest.TestCase):
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
-                #Clear out objects groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
+                clear_netsim(m)
 
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
-
-                #Add 18,000 unique object groups to each of the Netsim's object group types
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    og = "test_og_"
-
-                    num_types = 0
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        og_num = og + str(num_types) + '_'
-                        num_types = num_types + 1
-                        for j in range(18000):
-                            fake_og = og_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
-
-                    t.apply()
-
-                #Create the same amount of access lists as there are object group types and add 17,970 rules with the previously made object groups to each ACL
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    holder = "access_list_"
-                    rul = "extended permit icmp object-group test_og_"
-                    for i in range(num_types):
-                        acl_num = holder + str(i)
-                        root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
-                        rul_num = rul + str(i) + '_'
-                        for j in range(17970):
-                            fake_rule = rul_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl_num].rule.create(fake_rule)
-
-                    t.apply()
+                setup_netsim(m, 18000, 17970)
 
                 #Call the cleanup action and record the run time
                 with m.start_write_trans() as t:
@@ -282,22 +169,7 @@ class TestOGC(unittest.TestCase):
                     #Assert that cleanup runs in less than 600 seconds
                     self.assertTrue(run_time < 600)
 
-                #Clear out objects groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
-
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
+                clear_netsim(m)
 
     def test_remove(self):
         """
@@ -312,50 +184,9 @@ class TestOGC(unittest.TestCase):
         with ncs.maapi.Maapi() as m:
             with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
 
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
+                clear_netsim(m)
 
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
-
-                #Add 20 unique object groups to each of the Netsim's object group types
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    og = "test_og_"
-
-                    num_types = 0
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        og_num = og + str(num_types) + '_'
-                        num_types = num_types + 1
-                        for j in range(20):
-                            fake_og = og_num + str(j)
-                            root.devices.device[constants.device_name].config.asa__object_group[ogtyp].create(fake_og)
-
-                    t.apply()
-
-                #Create empty access lists
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-
-                    holder = "access_list_"
-
-                    for i in range(num_types):
-                        acl_num = holder + str(i)
-                        root.devices.device[constants.device_name].config.asa__access_list.access_list_id.create(acl_num)
-
-                    t.apply()
+                setup_netsim(m, 20, 0)
 
                 #Call the cleanup action and check the device's object group list
                 with m.start_write_trans() as t:
@@ -375,22 +206,7 @@ class TestOGC(unittest.TestCase):
                     #Assert that og_list is empty
                     self.assertEqual(og_list, empty_list)
 
-                #Clear out object groups in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for ogtyp in root.devices.device[constants.device_name].config.asa__object_group:
-                        for og in root.devices.device[constants.device_name].config.asa__object_group[ogtyp]:
-                            del root.devices.device[constants.device_name].config.asa__object_group[ogtyp][og.id]
-
-                    t.apply()
-
-                #Clear out access lists in Netsim
-                with m.start_write_trans() as t:
-                    root = ncs.maagic.get_root(t)
-                    for acl in root.devices.device[constants.device_name].config.asa__access_list.access_list_id:
-                        del root.devices.device[constants.device_name].config.asa__access_list.access_list_id[acl.id]
-
-                    t.apply()
+                clear_netsim(m)
 
 
 if __name__ == '__main__':
