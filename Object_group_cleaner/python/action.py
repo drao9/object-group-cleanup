@@ -72,10 +72,10 @@ class ActionHandler(Action):
 
         elif name == "remove":
             self.log.info("input: ", input)
-            self.log.info("device: ", input.inputs.device_name)
             obj_groups = helpers.build_og_list(input)
             outer_stat = "Success"
             for obj in obj_groups:
+                self.log.info("device: ", obj[0])
                 stat = obj_cleanup.remove_ogs(obj[0], obj[1], obj[2])
                 if stat != "Success":
                     outer_stat = stat
