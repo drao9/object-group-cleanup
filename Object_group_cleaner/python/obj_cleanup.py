@@ -1,5 +1,6 @@
 import socket
 import ncs
+import _ncs
 import ncs.maagic as mag
 
 def cleanup_or_search(box, to_del):
@@ -221,7 +222,7 @@ def remove_ogs(box, og_type, og_id):
             tran.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except Exception, err:
-            stat = type(err)
+    except _ncs.error.Error, err:
+            stat = err
 
     return stat
