@@ -207,7 +207,7 @@ def del_2(root, box, delete_second, orphaned_dict, ret, to_del):
     return ret
 
 
-def remove_ogs(box, og_id, og_type):
+def remove_ogs(box, og_type, og_id):
     """
     A function that removes the object group from the object group list using
     the arguments passed: device name, object group name, and object group type.
