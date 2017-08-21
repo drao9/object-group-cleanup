@@ -1,0 +1,19 @@
+import pandas as pd
+import glob
+
+
+for filename in glob.glob('/Users/axperez/Documents/SWChecker/*'):
+    print(filename)
+
+all_data = pd.DataFrame()
+
+
+for f in glob.glob('/Users/axperez/Documents/SWChecker/*'):
+    df = pd.read_csv(f)
+    print df
+    all_data = all_data.append(df)
+    #print all_data
+
+#print all_data
+
+#all_data.to_excel(excel_writer = '/Users/axperez/Documents/SWChecker/SWCheckerCombine.xlsx')

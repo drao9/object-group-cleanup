@@ -90,7 +90,9 @@ module input_output {
         list inputs {
           tailf:info "Input values for remove";
           leaf device_name {
-            type string;
+            type leafref {
+              path "/ncs:devices/ncs:device/ncs:name";
+            }
           }
           leaf og_type {
             type enumeration {
