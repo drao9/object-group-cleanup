@@ -208,6 +208,16 @@ class TestOGC(unittest.TestCase):
 
                 clear_netsim(m)
 
+    def test_recurs(self):
+        #Begin NSO session
+        with ncs.maapi.Maapi() as m:
+            with ncs.maapi.Session(m, 'ncsadmin', 'python', groups=['ncsadmin']):
+
+                clear_netsim(m)
+
+                setup_netsim(m, 20, 0)
+
+
 
 if __name__ == '__main__':
     unittest.main()
