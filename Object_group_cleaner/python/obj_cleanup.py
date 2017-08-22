@@ -31,11 +31,13 @@ def cleanup_or_search(box, to_del):
         box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, delete_first, orphaned_dict)
 
         #Prioritize which orphaned object groups need to be deleted first
-        delete_first, delete_second = prioritize_del(orphaned_ogs, used_group_ogs, delete_first)
+        #delete_first, delete_second = prioritize_del(orphaned_ogs, used_group_ogs, delete_first)
+
+        orphaned_ogs = orphaned_ogs.difference(used_group_ogs)
 
         #Delete the first group and then the second group
-        ret = del_1(root, box, delete_first, orphaned_dict, ret, to_del)
-        ret = del_2(root, box, delete_second, orphaned_dict, ret, to_del)
+        #ret = del_1(root, box, delete_first, orphaned_dict, ret, to_del)
+        ret = del_2(root, box, orphaned_ogs, orphaned_dict, ret, to_del)
 
         #For cleanup
         if to_del:
@@ -221,7 +223,7 @@ def remove_ogs(box, og_type, og_id):
             tran.apply()
             stat = "Success"
         #Provides error message if there is a problem removing an OG
-        except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
+          except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
             stat = err
 
     return stat
