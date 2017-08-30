@@ -10,6 +10,8 @@ from ncs.application import Application
 from _namespaces.Object_group_cleaner_ns import ns
 import helpers
 import obj_cleanup
+import modules
+
 
 DATE_FORMAT = "%H:%M:%S.%f"
 
@@ -39,49 +41,36 @@ class ActionHandler(Action):
         start = (datetime.strptime(str(datetime.now().time()), DATE_FORMAT))
         output.start_time = time.strftime("%H:%M:%S")
 
-        if name == "cleanup":
-            count = 0
+        if name == "cleanup" or name == "search":
             self.log.info("input: ", input)
             self.log.info("device: ", input.device)
-            device = input.device
-            og_for_removal, stat = obj_cleanup.cleanup_or_search(device, True)
-            for key in og_for_removal:
-                count += len(og_for_removal[key])
+
+            og_for_removal, count, stat = helpers.route(name, input.device, None, None)
+
             for key, value in og_for_removal.items():
                 for og in value:
                     result = output.deleted_object_groups.create()
                     result.object_group = og
                     result.og_type = key
+
             output.number_of_ogs_deleted = count
             output.stat = stat
-
-        elif name == "search":
-            count = 0
-            self.log.info("input: ", input)
-            self.log.info("device: ", input.device)
-            device = input.device
-            og_for_removal = obj_cleanup.cleanup_or_search(device, False)
-            for key in og_for_removal:
-                count += len(og_for_removal[key])
-            for key, value in og_for_removal.items():
-                for og in value:
-                    result = output.orphaned_object_groups.create()
-                    result.object_group = og
-                    result.og_type = key
-            output.number_of_orphaned = count
 
         elif name == "remove":
             self.log.info("input: ", input)
             obj_groups = helpers.build_og_list(input)
             outer_stat = "Success"
+
             for obj in obj_groups:
-                self.log.info("device: ", obj[0])
-                stat = obj_cleanup.remove_ogs(obj[0], obj[1], obj[2])
+                self.log.info("device: ", obj['device_name'])
+                stat = helpers.route(name, obj['device_name'], obj['og_type'], obj)
+
                 if stat != "Success":
                     outer_stat = stat
+
                 result = output.deleted_object_groups.create()
-                result.og_type = obj[1]
-                result.object_group = obj[2]
+                result.og_type = obj['og_type']
+                result.object_group = obj
             output.stat = outer_stat
 
         else:

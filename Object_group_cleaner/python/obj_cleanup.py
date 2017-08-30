@@ -17,7 +17,7 @@ def cleanup_or_search(box, to_del):
     used_group_ogs = set()
     orphaned_ogs = set()
     orphaned_dict = {}
-    delete_first = set()
+    #delete_first = set()
 
     #Creating transaction and setting root to access NSO
     with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
@@ -27,8 +27,8 @@ def cleanup_or_search(box, to_del):
         og_list, og_typ, acl_list = nso_to_python(box, root, og_list, og_typ, acl_list)
 
         #Finding the unused object groups and placing them in sets for prioritization
-        orphaned_ogs, delete_first, used_group_ogs, orphaned_dict = find_orphaned_og(root,
-        box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, delete_first, orphaned_dict)
+        orphaned_ogs, used_group_ogs, orphaned_dict = find_orphaned_og(root,
+        box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, orphaned_dict)
 
         #Prioritize which orphaned object groups need to be deleted first
         #delete_first, delete_second = prioritize_del(orphaned_ogs, used_group_ogs, delete_first)
@@ -52,6 +52,7 @@ def cleanup_or_search(box, to_del):
             return ret, stat
     #For search
     return ret
+
 
 
 def nso_to_python(box, root, og_list, og_typ, acl_list):
@@ -95,7 +96,7 @@ def rec_group_og(used_group_ogs, root, box, og, typ):
 
     return used_group_ogs
 
-def find_orphaned_og(root, box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, delete_first, orphaned_dict):
+def find_orphaned_og(root, box, og_list, og_typ, acl_list, used_group_ogs, orphaned_ogs, orphaned_dict):
     """
     A function that finds all of the unused object groups by iterating through all of the access
     lists for each object group, checking if the object group is in any of the rules of any of
@@ -128,13 +129,13 @@ def find_orphaned_og(root, box, og_list, og_typ, acl_list, used_group_ogs, orpha
             inner_dict = {"og_type" : typ, "group_ogs" : [], "deleted" : False}
             #If the object group has group-objects, add to delete_first set
             if root.devices.device[box].config.asa__object_group[typ][og].group_object:
-                delete_first.add(og)
+                #delete_first.add(og)
                 for group_og in root.devices.device[box].config.asa__object_group[typ][og].group_object:
                     inner_dict["group_ogs"].append(group_og.id)
             #Add inner dictionary to orphaned object group key in dictionary
             orphaned_dict[og] = inner_dict
 
-    return orphaned_ogs, delete_first, used_group_ogs, orphaned_dict
+    return orphaned_ogs, used_group_ogs, orphaned_dict
 
 def prioritize_del(orphaned_ogs, used_group_ogs, delete_first):
     """
