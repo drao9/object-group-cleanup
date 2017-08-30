@@ -49,11 +49,11 @@ class ActionHandler(Action):
 
             for key, value in og_for_removal.items():
                 for og in value:
-                    result = output.deleted_object_groups.create()
+                    result = output.orphaned_object_groups.create()
                     result.object_group = og
                     result.og_type = key
 
-            output.number_of_ogs_deleted = count
+            output.number_of_orphaned = count
             output.stat = stat
 
         elif name == "remove":
