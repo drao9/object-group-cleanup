@@ -45,7 +45,7 @@ def create_modules():
             for name, _class in classes:
                 if "Abs" not in name:
                     new_class = _class()
-                    dev_type_objects[new_class.group].append(new_class)
+                    dev_type_objects[new_class.group] = new_class
     return dev_type_objects
 
 def find_dev_type(device):
