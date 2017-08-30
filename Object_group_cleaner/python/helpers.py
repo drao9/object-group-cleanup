@@ -52,4 +52,5 @@ def find_dev_type(device):
     with ncs.maapi.single_read_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
         root = ncs.maagic.get_root(tran)
 
-        return root.devices.device[device].device_type.cli.ned_id
+        dev_type = root.devices.device[device].device_type.cli.ned_id
+    return dev_type
