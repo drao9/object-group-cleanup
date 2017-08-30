@@ -1,5 +1,6 @@
 import ncs
 import _ncs
+import socket
 import abc
 
 class AbsCommon(object):
