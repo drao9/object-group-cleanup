@@ -25,8 +25,7 @@ def route(name, device, og_type, og_id):
     Does this by calling create_modules()
     Then from the returned dictionary, callign the appropriate group and module.
     """
-    #dev_type = find_dev_type(device)
-    dev_type = 'cisco-asa'
+    dev_type = find_dev_type(device)
     module_list = create_modules()
     return module_list[dev_type].route_action(name, device, og_type, og_id)
 

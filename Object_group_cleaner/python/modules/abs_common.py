@@ -67,7 +67,7 @@ class AbsCommon(object):
         with ncs.maapi.single_write_trans('ncsadmin', 'python', groups=['ncsadmin']) as tran:
             root = ncs.maagic.get_root(tran)
 
-            #Converting access lists and object group list to python lists
+            #Converting access lists and object group list to python dictionaries
             obj_dict = self.obj_list_conversion(box, root)
             acl_dict = self.acl_list_conversion(box, root)
 
@@ -79,13 +79,13 @@ class AbsCommon(object):
             orphan_count = len(orphaned_ogs)
             ret = self.del_2(root, box, orphaned_ogs, obj_dict, True)
 
-        #Apply the changes and show NSO errors to the stat output
-        try:
-            tran.apply()
-            stat = "Success"
+            #Apply the changes and show NSO errors to the stat output
+            try:
+                tran.apply()
+                stat = "Success"
 
-        except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
-            stat = err
+            except (_ncs.error.Error, ncs.maagic.MaagicError) as err:
+                stat = err
 
         return ret, orphan_count, stat
         """
