@@ -49,7 +49,6 @@ module input_output {
       }
       output {
         uses output;
-        }
       }
     }
     tailf:action search {
@@ -111,3 +110,4 @@ module input_output {
       }
     }
   }
+}
