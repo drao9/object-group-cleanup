@@ -1,3 +1,18 @@
+"""
+Title:
+    - Module for ASA Device Type
+
+Developed by:
+    - Axel Perez axperez@cisco.com
+    - Alyssa Sandore asandore@cisco.com
+    - Divyani Rao divyarao@cisco.com
+    - Rob Gonzales robgo@cisco.com
+
+Description:
+    - Functions that are specific to the ASA device type that replace the absract methods
+      inherited by the AbsCommon class. 
+
+"""
 import ncs
 import _ncs
 from .abs_common import AbsCommon
