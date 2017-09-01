@@ -9,6 +9,8 @@ Description:
     - Testsuite that checks various cases to ensure the tool's algorithm is providing the correct
       output, performance time, and recursive function. This is accomplished by using a netsim
       (virtual test device) thats name (constants.netsim) is provided in the constants.py file.
+    - Test only tests ASA devices.
+    - Run this file in terminal
 """
 
 import unittest
