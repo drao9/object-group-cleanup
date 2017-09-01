@@ -252,6 +252,7 @@ class TestOGC(unittest.TestCase):
                     ASA_obj.rec_group_og(used_group_ogs, root, constants.netsim, test_og, 'network')
 
                 print used_group_ogs
+                self.assertEqual(used_group_ogs, constants.answer2)
 
                 clear_netsim(m)
 
