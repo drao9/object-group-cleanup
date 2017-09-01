@@ -29,7 +29,7 @@ def init_logger():
 def importLibs(packageName):
 	#currentDir = os.getcwd()
 	oldDir = '/var/opt/ncs/'
-	currentDir = currentDir + os.sep + "packages" + os.sep + packageName + os.sep + "python" + os.sep + "modules" + os.sep
+	currentDir = oldDir + os.sep + "packages" + os.sep + packageName + os.sep + "python" + os.sep + "modules" + os.sep
 	for moduleNames in os.listdir(currentDir):
 		os.chdir(currentDir)
 		if fnmatch.fnmatch(moduleNames, '*_module.py'):
