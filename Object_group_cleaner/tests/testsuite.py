@@ -238,7 +238,7 @@ class TestOGC(unittest.TestCase):
 
                     test_og = 'test_og_'
                     root.devices.device[constants.netsim].config.asa__object_group['network'].create(test_og)
-                    for i in range(20):
+                    for i in range(1, 21):
                         fake_og = test_og + str(i)
                         root.devices.device[constants.netsim].config.asa__object_group['network'].create(fake_og)
                     create_rec_og(test_og, 20, root)
