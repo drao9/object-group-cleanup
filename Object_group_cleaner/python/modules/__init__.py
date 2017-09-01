@@ -27,8 +27,8 @@ def init_logger():
     logger.addHandler(fhandler)
 
 def importLibs(packageName):
-	currentDir = os.getcwd()
-	oldDir = currentDir
+	#currentDir = os.getcwd()
+	oldDir = '/var/opt/ncs/'
 	currentDir = currentDir + os.sep + "packages" + os.sep + packageName + os.sep + "python" + os.sep + "modules" + os.sep
 	for moduleNames in os.listdir(currentDir):
 		os.chdir(currentDir)
