@@ -17,6 +17,7 @@ import ncs
 import constants
 import sys
 sys.path.insert(0, '/var/opt/ncs/packages/Object_group_cleaner/python/modules')
+import abs_common
 import asa_module
 
 def clear_netsim(m):
