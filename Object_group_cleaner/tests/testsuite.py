@@ -16,8 +16,8 @@ import time
 import ncs
 import constants
 import sys
-sys.path.insert(0, '/var/opt/ncs/packages/Object_group_cleaner/python')
-import modules.asa_module
+sys.path.insert(0, '/var/opt/ncs/packages/Object_group_cleaner/python/modules')
+import asa_module
 
 def clear_netsim(m):
     #Clear out object groups in Netsim
