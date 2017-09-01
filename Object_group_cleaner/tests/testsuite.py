@@ -169,7 +169,7 @@ class TestOGC(unittest.TestCase):
 
                 clear_netsim(m)
 
-                setup_netsim(m, 1800, 1797)
+                setup_netsim(m, 10000, 9970)
 
                 #Call the cleanup action and record the run time
                 with m.start_write_trans() as t:
@@ -251,7 +251,6 @@ class TestOGC(unittest.TestCase):
                     ASA_obj = modules.asa_module.ASAcleanup()
                     ASA_obj.rec_group_og(used_group_ogs, root, constants.netsim, test_og, 'network')
 
-                print used_group_ogs
                 self.assertEqual(used_group_ogs, constants.answer2)
 
                 clear_netsim(m)
