@@ -1,5 +1,4 @@
 from __future__ import print_function
-import sys
 import ncs
 from datetime import datetime
 import time
@@ -9,8 +8,6 @@ from ncs.dp import Action
 from ncs.application import Application
 from _namespaces.Object_group_cleaner_ns import ns
 import helpers
-import obj_cleanup
-import modules
 
 
 DATE_FORMAT = "%H:%M:%S.%f"
