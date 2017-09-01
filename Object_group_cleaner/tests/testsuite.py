@@ -246,7 +246,7 @@ class TestOGC(unittest.TestCase):
                     root = ncs.maagic.get_root(t)
                     used_group_ogs = set()
                     ASA_obj = modules.asa_module.ASAcleanup
-                    ASA_obj.rec_group_og(used_group_ogs, root, constants.netsim, test_og, 'network')
+                    ASA_obj.rec_group_og(self, used_group_ogs, root, constants.netsim, test_og, 'network')
 
                 print used_group_ogs
 
