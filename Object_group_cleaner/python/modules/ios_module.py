@@ -63,8 +63,8 @@ class IOScleanup(AbsCommon):
 
         acl_dict['ext-named-acl'] = []
         for rul in root.devices.device[box].config.ios__ip.access_list.extended.ext_named_acl:
-            if "object-group" in rul.id:
-                acl_dict['ext-named-acl'].append(rul)
+            if "object-group" in rul.name:
+                acl_dict['ext-named-acl'].append(rul.name)
 
         return acl_dict
 
