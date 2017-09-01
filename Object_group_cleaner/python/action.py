@@ -1,3 +1,18 @@
+"""
+Title:
+    - Action Python File for Object Group Cleanup Tool
+
+Developed by:
+    - Axel Perez axperez@cisco.com
+    - Alyssa Sandore asandore@cisco.com
+    - Divyani Rao divyarao@cisco.com
+    - Rob Gonzales robgo@cisco.com
+
+Description:
+    - Code that logs all of the user and option information of the tool, calls the
+    appropriate functions depending on the option, and creates the output from the
+    YANG.
+"""
 from __future__ import print_function
 import ncs
 from datetime import datetime
