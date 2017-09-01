@@ -30,7 +30,7 @@ def importLibs(packageName):
 	currentDir = os.getcwd()
 	print currentDir
 	oldDir = currentDir
-	currentDir = currentDir + os.sep + "packages" + os.sep + packageName + os.sep + "tests" + os.sep + "modules" + os.sep
+	currentDir = currentDir + os.sep + "modules" + os.sep
 	for moduleNames in os.listdir(currentDir):
 		os.chdir(currentDir)
 		if fnmatch.fnmatch(moduleNames, '*_module.py'):
