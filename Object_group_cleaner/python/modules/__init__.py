@@ -39,5 +39,5 @@ def importLibs(packageName):
 			LOG.info("\n\nSuccessfully load %s", moduleNames)
 	os.chdir(oldDir)
 
-init_logger()
+
 importLibs(packageName)

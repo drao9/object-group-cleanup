@@ -17,6 +17,8 @@ import unittest
 import time
 import ncs
 import constants
+import sys
+sys.path.insert(0, '/var/opt/ncs/packages/Object_group_cleaner/python/')
 import modules
 
 def clear_netsim(m):
@@ -71,11 +73,11 @@ def setup_netsim(m, num_ogs, num_rules):
 
         t.apply()
 
-def create_rec_og(test_og, depth, root):
+def create_rec_og(test_og, parent, depth, root):
     if depth:
         fake_og = test_og + str(depth)
-        root.devices.device[constants.netsim].config.asa__object_group.network[test_og].group_object.create(fake_og)
-        create_rec_og(fake_og, depth - 1, root)
+        root.devices.device[constants.netsim].config.asa__object_group.network[parent].group_object.create(fake_og)
+        create_rec_og(test_og, fake_og, depth - 1, root)
 
 class TestOGC(unittest.TestCase):
     """
@@ -243,7 +245,7 @@ class TestOGC(unittest.TestCase):
                     for i in range(1, 21):
                         fake_og = test_og + str(i)
                         root.devices.device[constants.netsim].config.asa__object_group['network'].create(fake_og)
-                    create_rec_og(test_og, 20, root)
+                    create_rec_og(test_og, test_og, 20, root)
 
                     t.apply()
 
