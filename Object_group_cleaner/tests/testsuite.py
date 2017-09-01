@@ -17,7 +17,7 @@ import ncs
 import constants
 import sys
 sys.path.insert(0, '/var/opt/ncs/packages/Object_group_cleaner/python')
-import modules
+import modules.asa_module
 
 def clear_netsim(m):
     #Clear out object groups in Netsim
@@ -247,7 +247,7 @@ class TestOGC(unittest.TestCase):
                 with m.start_read_trans() as t:
                     root = ncs.maagic.get_root(t)
                     used_group_ogs = set()
-                    modules.asa_module.rec_group_og(used_group_ogs, root, constants.netsim, test_og, 'network')
+                    asa_module.rec_group_og(used_group_ogs, root, constants.netsim, test_og, 'network')
 
                 print used_group_ogs
 

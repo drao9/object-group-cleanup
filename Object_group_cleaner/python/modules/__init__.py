@@ -22,7 +22,7 @@ LOG = logging.getLogger("tester")
 
 def init_logger():
     logger = logging.getLogger("tester")
-    fhandler = logging.FileHandler("/var/log/ncs/modules1.log")
+    fhandler = logging.FileHandler("/var/log/ncs/modules.log")
     fhandler.setLevel(logging.DEBUG)
     logger.addHandler(fhandler)
 
