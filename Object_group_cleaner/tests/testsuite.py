@@ -75,7 +75,7 @@ def create_rec_og(test_og, depth, root):
     if depth:
         fake_og = test_og + str(depth)
         root.devices.device[constants.netsim].config.asa__object_group.network[test_og].group_object.create(fake_og)
-        create_rec_og(test_og, depth - 1, root)
+        create_rec_og(fake_og, depth - 1, root)
 
 class TestOGC(unittest.TestCase):
     """
